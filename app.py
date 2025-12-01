@@ -1921,7 +1921,7 @@
 #     disease_model, vectorizer, remedy_df = None, None, None
 
 # # --- OpenRouter API Configuration ---
-# OPENROUTER_API_KEY = "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"
+# OPENROUTER_API_KEY = ""
 # OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
@@ -3294,4 +3294,5 @@ def sms_tester_page():
 # --- Main execution ---
 if __name__ == "__main__":
     app.run(debug=True)
+
 
