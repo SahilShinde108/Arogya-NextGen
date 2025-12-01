@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Public Health Monitoring Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f4f7f6; }
+        .kpi-card, .chart-card, .table-card { 
+            background-color: #ffffff; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            height: 100%;
+        }
+        .chart-card, .table-card { padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Public Health Dashboard - Nabha District</h2>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+        </div>
+
+        <!-- 1. Upgraded KPIs -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3"><div class="kpi-card text-center p-3"><h4>{{ kpis.total_patients }}</h4><p class="text-muted mb-0">Total Patients</p></div></div>
+            <div class="col-md-3 mb-3"><div class="kpi-card text-center p-3"><h4>{{ kpis.active_ashas }}</h4><p class="text-muted mb-0">Active ASHA Workers</p></div></div>
+            <div class="col-md-3 mb-3"><div class="kpi-card text-center p-3"><h4>{{ kpis.high_risk_alerts }}</h4><p class="text-muted mb-0">High-Risk Alerts</p></div></div>
+            <div class="col-md-3 mb-3"><div class="kpi-card text-center p-3"><h4>{{ kpis.total_reports_filed }}</h4><p class="text-muted mb-0">Triage Reports Filed</p></div></div>
+        </div>
+
+        <!-- 2. Disease Trends and Pharmacy Inventory -->
+        <div class="row">
+            <div class="col-lg-7 mb-4"><div class="chart-card"><h5>Top 10 Disease Trends (from AI Predictions)</h5><canvas id="diseaseTrendChart"></canvas></div></div>
+            <div class="col-lg-5 mb-4"><div class="chart-card"><h5>District Pharmacy Inventory</h5><canvas id="inventoryChart"></canvas></div></div>
+        </div>
+
+        <!-- 3. Hotspot Analysis & ASHA Leaderboard -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="table-card">
+                    <h5>High-Risk Village Hotspots</h5>
+                    <p class="small text-muted">Villages with the highest number of high-risk SMS alerts.</p>
+                    <table class="table table-hover">
+                        <thead><tr><th>Village</th><th>High-Risk Alerts</th></tr></thead>
+                        <tbody>
+                            {% for spot in hotspot_data %}
+                            <tr>
+                                <td><strong>{{ spot.village or 'Unknown' }}</strong></td>
+                                <td><span class="badge bg-danger rounded-pill">{{ spot.alert_count }}</span></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="2" class="text-center">No high-risk data available.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="table-card">
+                    <h5>ASHA Worker Activity Leaderboard</h5>
+                    <p class="small text-muted">Based on number of triage reports filed.</p>
+                    <table class="table table-hover">
+                        <thead><tr><th>ASHA Worker Phone</th><th>Reports Filed</th></tr></thead>
+                        <tbody>
+                            {% for asha in asha_leaderboard %}
+                            <tr>
+                                <td>{{ asha.asha_worker_phone }}</td>
+                                <td><strong>{{ asha.report_count }}</strong></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="2" class="text-center">No activity data available.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript for charts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Disease Trend Chart ---
+            const diseaseData = {{ disease_trends | safe }};
+            const diseaseLabels = Object.keys(diseaseData);
+            const diseaseCounts = Object.values(diseaseData);
+            
+            const diseaseCtx = document.getElementById('diseaseTrendChart').getContext('2d');
+            new Chart(diseaseCtx, {
+                type: 'bar',
+                data: {
+                    labels: diseaseLabels,
+                    datasets: [{
+                        label: 'Number of Reports',
+                        data: diseaseCounts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { indexAxis: 'y' }
+            });
+
+            // --- Pharmacy Inventory Chart ---
+            const inventoryData = {{ inventory_summary | safe }};
+            const medLabels = Object.keys(inventoryData);
+            const inStockCounts = medLabels.map(med => inventoryData[med]['In Stock'] || 0);
+            const lowStockCounts = medLabels.map(med => inventoryData[med]['Low Stock'] || 0);
+            const outOfStockCounts = medLabels.map(med => inventoryData[med]['Out of Stock'] || 0);
+
+            const inventoryCtx = document.getElementById('inventoryChart').getContext('2d');
+            new Chart(inventoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: medLabels,
+                    datasets: [
+                        { label: 'In Stock', data: inStockCounts, backgroundColor: 'rgba(75, 192, 192, 0.6)' },
+                        { label: 'Low Stock', data: lowStockCounts, backgroundColor: 'rgba(255, 206, 86, 0.6)' },
+                        { label: 'Out of Stock', data: outOfStockCounts, backgroundColor: 'rgba(255, 99, 132, 0.6)' }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

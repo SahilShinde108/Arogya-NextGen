@@ -1,0 +1,129 @@
+<!--<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('home') }}">
+      <img
+        src="{{ url_for('static', filename='asseat_2/logo1.png') }}"
+        alt="Logo"
+        height="40"
+        class="d-inline-block align-text-top"
+      />
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+        </li>
+
+        If an admin is logged in -->
+       <!-- {% if session.admin_logged_in %}
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            href="{{ url_for('monitoring_dashboard') }}"
+            >Admin Dashboard</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+        </li>
+
+        
+        {% elif session.user_id %}
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ url_for('user_dashboard') }}"
+            >My Dashboard</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+        </li>
+
+
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('login') }}">Patient Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('signup') }}">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('admin_login') }}"
+            >Admin Login</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>-->
+
+
+
+
+
+<!-- This navigation bar is designed to be fixed to the top of the screen -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='asseat_2/logo1.png') }}" alt="Logo" height="40" class="d-inline-block align-text-top">
+             Arogya NextGen
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                </li>
+                
+                <!-- If an admin is logged in -->
+                {% if session.admin_logged_in %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('monitoring_dashboard') }}">Admin Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                
+                <!-- If a regular user is logged in -->
+                {% elif session.user_id %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('user_dashboard') }}">My Dashboard</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+
+                <!-- If no one is logged in -->
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Patient Login</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('signup') }}">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_login') }}">Admin Login</a>
+                </li>
+                <!-- NEW LINK FOR HEALTH DEPARTMENT -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('health_dept_login') }}">Health Dept. Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
