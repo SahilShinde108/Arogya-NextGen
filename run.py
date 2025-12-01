@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "AIzaSyA2uYjzPxb7bpAgvd4xr8dO-NZSW9EttgE"
+API_KEY = ""
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
 
 headers = {
@@ -24,3 +24,4 @@ try:
     print(response.json())
 except requests.exceptions.RequestException as e:
     print("❌ Gemini API failed:", e)
+
